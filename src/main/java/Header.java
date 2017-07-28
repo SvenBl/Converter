@@ -1,4 +1,7 @@
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,11 +27,8 @@ public class Header {
 
 
     public Header(List<String> latexHeader){
-        teiHeader = new ArrayList<String>();
+        this.teiHeader = new ArrayList<String>();
         initializeIntel(latexHeader);
-
-        createTEI();
-
     }
 
 
@@ -36,7 +36,7 @@ public class Header {
     public void initializeIntel(List<String> latexHeader)
     {
         Pattern titlePattern = Pattern.compile("^\\\\title\\{(.+?)\\}");
-        Pattern authorPattern = Pattern.compile("^\\\\author\\{.*\\}");
+        Pattern authorPattern = Pattern.compile("^\\\\author\\{(.+?)\\}");
         Pattern publisherPattern = Pattern.compile("^\\\\title\\{.*\\}");
         Pattern pubPlacePattern = Pattern.compile("^\\\\title\\{.*\\}");
         Pattern licensePattern = Pattern.compile("^\\\\title\\{.*\\}");
@@ -47,31 +47,31 @@ public class Header {
         for(String s : latexHeader){
             m = titlePattern.matcher(s);
             if(m.find()){
-                title = m.group(1);
+                this.title = m.group(1);
             }
             m = authorPattern.matcher(s);
             if(m.find()){
-                author = "foo";
+                this.author = m.group(1);
             }
             m = publisherPattern.matcher(s);
             if(m.find()){
-                publisher = "foo";
+                this.publisher = "foo";
             }
             m = pubPlacePattern.matcher(s);
             if(m.find()){
-                pubPlace = "foo";
+                this.pubPlace = "foo";
             }
             m = licensePattern.matcher(s);
             if(m.find()){
-                license = "foo";
+                this.license = "foo";
             }
             m = datePattern.matcher(s);
             if(m.find()){
                 date = m.group(1);
                 if(date.equals("\\today")){
-
-                    //Todo set correct date
-                    date = "Heute";
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/M/yyyy");
+                    String date = sdf.format(new Date());
+                    this.date = date;
                 }
             }
             m = languagePattern.matcher(s);
@@ -118,6 +118,27 @@ public class Header {
         teiHeader.add("\t</teiHeader>");
     }
 
+    public String getTitle() {
+        return title;
+    }
 
+    public String getAuthor() {
+        return author;
+    }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 }
