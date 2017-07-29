@@ -43,10 +43,12 @@ public class Form {
                 inputPathField.setText("C:\\Users\\disas\\Dropbox\\Uni Leipzig\\Anwendungen der Linguistischen Informatik\\lls_cts_v4\\cts_lit.tex");
                 outputPathField.setText("C:\\Users\\disas\\Dropbox\\Uni Leipzig\\Anwendungen der Linguistischen Informatik\\lls_cts_v4");
 
-                reader = new LatexReader(inputPathField.getText());
 
                 //set both
-                reader = new LatexReader("C:\\Users\\disas\\Dropbox\\Uni Leipzig\\Anwendungen der Linguistischen Informatik\\lls_cts_v4\\cts_lit.tex");
+                try{
+                    reader = new LatexReader(inputPathField.getText());
+
+
                 //reader = new LatexReader("C:\\Users\\disas\\Dropbox\\Uni Leipzig\\Anwendungen der Linguistischen Informatik\\CLARIN_CTS.tex");
 
                 //Read the LatexFiles
@@ -58,7 +60,12 @@ public class Form {
                 titleField.setText(tHead.getTitle());
                 dateField.setText(tHead.getDate());
 
-
+                } catch (Exception el){
+                    JOptionPane.showMessageDialog(null,
+                            "The input file could not be found!");
+                    el.printStackTrace();
+                    return;
+                }
 
 
 
@@ -67,9 +74,23 @@ public class Form {
         convertButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Header
+                if(authorField.getText().equals("") || titleField.getText().equals("") || dateField.getText().equals("")) {
+                    JOptionPane.showMessageDialog(null,
+                            "The file could not be created! Set metadata first!");
+                    return;
+                }
+
+                if (tHead == null){
+                    JOptionPane.showMessageDialog(null,
+                            "The file could not be created! Crawl Metadata from a valid file first!");
+                    return;
+                }
+
                 tHead.setAuthor(authorField.getText());
                 tHead.setTitle(titleField.getText());
                 tHead.setDate(dateField.getText());
+
+
                 tHead.createTEI();
                 List<String> teiHeader = tHead.getTeiHeader();
 
@@ -108,10 +129,19 @@ public class Form {
                 String title = tHead.getTitle();
                 title = title.replaceAll("\\s", "-").replaceAll( "[.]" , "-");
 
-                String filePath = (outputPathField.getText())+ "\\"
-                        + author + "\\"
-                        + date + "\\"
-                        + title + ".xml";
+                String filePath = "";
+                try{
+                    filePath = (outputPathField.getText())+ "\\"
+                            + author + "\\"
+                            + date + "\\"
+                            + title + ".xml";
+                } catch(NullPointerException e1) {
+                    e1.printStackTrace();
+                    JOptionPane.showMessageDialog(null,
+                            "The file could not be created! Output path has to be set!");
+                    return;
+                }
+
 
                 BufferedWriter bwr = null;
                 try {
@@ -123,6 +153,8 @@ public class Form {
                     bwr.flush();
                     bwr.close();
                 } catch (IOException e1) {
+                    JOptionPane.showMessageDialog(null,
+                            "The File could not be created");
                     e1.printStackTrace();
                 }
 
