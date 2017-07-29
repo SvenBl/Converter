@@ -1,13 +1,14 @@
-import javafx.stage.FileChooser;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -30,10 +31,10 @@ public class Form {
     private JTextField authorField;
     private JTextField titleField;
     private JTextField dateField;
+    private JButton setTodayButton;
 
     private LatexReader reader;
     private Header tHead;
-    private Text tText;
 
     public Form() {
         metaButton.addActionListener(new ActionListener() {
@@ -107,15 +108,17 @@ public class Form {
                 String title = tHead.getTitle();
                 title = title.replaceAll("\\s", "-").replaceAll( "[.]" , "-");
 
+                String filePath = (outputPathField.getText())+ "\\"
+                        + author + "\\"
+                        + date + "\\"
+                        + title + ".xml";
+
                 BufferedWriter bwr = null;
                 try {
                     System.out.println(new File((outputPathField.getText())+ "\\"
                             + author + "\\"
                             + date).mkdirs());
-                    bwr = new BufferedWriter(new FileWriter(new File((outputPathField.getText())+ "\\"
-                            + author + "\\"
-                            + date + "\\"
-                            + title + ".xml")));
+                    bwr = new BufferedWriter(new FileWriter(new File(filePath)));
                     bwr.write(sb.toString());
                     bwr.flush();
                     bwr.close();
@@ -123,6 +126,28 @@ public class Form {
                     e1.printStackTrace();
                 }
 
+
+                // XMLReader erzeugen
+                XMLReader xmlReader = null;
+                FileReader reader = null;
+                try {
+                    xmlReader = XMLReaderFactory.createXMLReader();
+                    reader = new FileReader(filePath);
+                    InputSource inputSource = new InputSource(reader);
+                    // DTD kann optional übergeben werden
+                    // inputSource.setSystemId("X:\\personen.dtd");
+                    xmlReader.parse(inputSource);
+                    JOptionPane.showMessageDialog(null,
+                            "The file has been succesfully converted in a valid .xml file!");
+                } catch (SAXException e1) {
+                    e1.printStackTrace();
+                    JOptionPane.showMessageDialog(null,
+                            "The file has been converted but the .xml file is not valid!");
+                } catch (FileNotFoundException e1) {
+                    e1.printStackTrace();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
             }
         });
         inputPathButton.addActionListener(new ActionListener() {
@@ -152,6 +177,13 @@ public class Form {
                 }
             }
         });
+        setTodayButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
+                Date now = new Date();
+                dateField.setText(sdfDate.format(now));
+            }
+        });
     }
 
     public static void main(String[]args){
@@ -161,33 +193,6 @@ public class Form {
         frame.pack();
         frame.setVisible(true);
 
-
-        /*
-        //Read the LatexFiles
-        List<String> latexHeader = reader.getLatexHeader();
-        List<String> latexText = reader.getLatexText();
-
-        //Create the TEI Components
-        Header tHead = new Header(latexHeader);
-        List<String> teiHeader = tHead.getTeiHeader();
-        Text tText = new Text(latexText);
-        List<String> teiText = tText.getTeiText();
-
-        int i = 0;
-
-        for(String s : teiHeader)
-        {
-            System.out.println(i + " " + s);
-            i++;
-        }
-
-        i = 0;
-        for(String s : teiText)
-        {
-            System.out.println(i + " " + s);
-            i++;
-        }
-    */
     }
 
 }
