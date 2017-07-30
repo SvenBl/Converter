@@ -25,6 +25,8 @@ public class Text {
         Pattern sentencePattern = Pattern.compile("^[^\\\\\\#]");
         Pattern footnotePattern = Pattern.compile("\\\\footnote\\{(.+?)\\}");
         Pattern textitPattern = Pattern.compile("\\\\textit\\{(.+?)\\}");
+        Pattern textbfPattern = Pattern.compile("\\\\textibf\\{(.+?)\\}");
+        Pattern underlinePattern = Pattern.compile("\\\\underline\\{(.+?)\\}");
 
 
 
@@ -80,13 +82,26 @@ public class Text {
                 if(m.find() && textstart){
                     m = footnotePattern.matcher(s);
                     while(m.find()){
-                        String footnote = "(Footnote: " + m.group(1) + ")";
+                        String footnote = "( Footnote: " + m.group(1) + ")";
                         s = s.replaceFirst("\\\\footnote\\{(.+?)\\}", footnote);
                     }
                     m = textitPattern.matcher(s);
                     while(m.find()){
                         s = s.replaceFirst("\\\\textit\\{(.+?)\\}", m.group(1));
                     }
+                    m = textbfPattern.matcher(s);
+                    while(m.find()){
+                        s = s.replaceFirst("\\\\textbf\\{(.+?)\\}", m.group(1));
+                    }
+                    m = underlinePattern.matcher(s);
+                    while(m.find()){
+                        s = s.replaceFirst("\\\\underline\\{(.+?)\\}", m.group(1));
+                    }
+                    //clean potential errors
+                        s = s.replaceAll("\\\\textit\\{", "")
+                                .replaceAll("\\\\textbf\\{", "")
+                                .replaceAll("\\\\underline\\{", "");
+
                     s = s.replaceAll("&", "&amp;")
                             .replaceAll("<", "&lt;")
                             .replaceAll(">" , "&gt;")
