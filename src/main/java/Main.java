@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.util.List;
 
 
@@ -16,6 +17,12 @@ public class Main {
             System.out.println(i + " " + s);
             i++;
         }
+
+        JFrame frame = new JFrame("Converter");
+        frame.setContentPane(new Form().getPanelMain());
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
 
 
     }
