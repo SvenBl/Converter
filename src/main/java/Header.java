@@ -98,6 +98,7 @@ public class Header {
 
 
     public void createTEI(){
+        teiHeader.clear();
         teiHeader.add("<TEI xmlns=\"http://www.tei-c.org/ns/1.0\">");
         teiHeader.add("\t<teiHeader type=\"text\">");
         teiHeader.add("\t\t<fileDesc>");

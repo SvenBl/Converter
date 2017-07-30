@@ -8,7 +8,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -97,6 +96,8 @@ public class Form {
                 //Text
                 Text tText = new Text(latexDoc);
                 List<String> teiText = tText.getTeiText();
+
+
 
                 StringBuffer sb = new StringBuffer();
                 for(String line : teiHeader){
