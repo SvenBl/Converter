@@ -8,13 +8,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by disas on 27.07.2017.
- */
+
 public class Form {
     private JButton metaButton;
     private JPanel panelMain;
@@ -33,36 +32,34 @@ public class Form {
     private JTextField dateField;
     private JButton setTodayButton;
 
-    private LatexReader reader;
+    private Converter converter;
+    private List<String> latexDoc;
     private Header tHead;
 
     public Form() {
         metaButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //to remove
+
+                // TODO: 30.07.2017 remove below
                 inputPathField.setText("C:\\Users\\disas\\Dropbox\\Uni Leipzig\\Anwendungen der Linguistischen Informatik\\lls_cts_v4\\cts_lit.tex");
                 outputPathField.setText("C:\\Users\\disas\\Dropbox\\Uni Leipzig\\Anwendungen der Linguistischen Informatik\\lls_cts_v4");
 
 
                 //set both
                 try{
-                    reader = new LatexReader(inputPathField.getText());
+                    converter = new Converter(inputPathField.getText());
+                    latexDoc = converter.readFile(inputPathField.getText());
+                    tHead = new Header(latexDoc);
 
 
-                //reader = new LatexReader("C:\\Users\\disas\\Dropbox\\Uni Leipzig\\Anwendungen der Linguistischen Informatik\\CLARIN_CTS.tex");
-
-                //Read the LatexFiles
-                List<String> latexHeader = reader.getLatexHeader();
-                tHead = new Header(latexHeader);
-
-
-                authorField.setText(tHead.getAuthor());
-                titleField.setText(tHead.getTitle());
-                dateField.setText(tHead.getDate());
+                    authorField.setText(tHead.getAuthor());
+                    titleField.setText(tHead.getTitle());
+                    dateField.setText(tHead.getDate());
 
                 } catch (Exception el){
                     JOptionPane.showMessageDialog(null,
-                            "The input file could not be found!");
+                            "The input file could not be found!",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     el.printStackTrace();
                     return;
                 }
@@ -76,13 +73,15 @@ public class Form {
                 //Header
                 if(authorField.getText().equals("") || titleField.getText().equals("") || dateField.getText().equals("")) {
                     JOptionPane.showMessageDialog(null,
-                            "The file could not be created! Set metadata first!");
+                            "The file could not be created! Set metadata first!",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
                 if (tHead == null){
                     JOptionPane.showMessageDialog(null,
-                            "The file could not be created! Crawl Metadata from a valid file first!");
+                            "The file could not be created! Crawl Metadata from a valid file first!",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -96,23 +95,8 @@ public class Form {
 
 
                 //Text
-                List<String> latexText = reader.getLatexText();
-                Text tText = new Text(latexText);
+                Text tText = new Text(latexDoc);
                 List<String> teiText = tText.getTeiText();
-
-                int i = 0;
-
-                for(String s : teiHeader)
-                {
-                    System.out.println(i + " " + s);
-                    i++;
-                }
-                i = 0;
-                for(String s : teiText)
-                {
-                    System.out.println(i + " " + s);
-                    i++;
-                }
 
                 StringBuffer sb = new StringBuffer();
                 for(String line : teiHeader){
@@ -129,6 +113,7 @@ public class Form {
                 String title = tHead.getTitle();
                 title = title.replaceAll("\\s", "-").replaceAll( "[.]" , "-");
 
+
                 String filePath = "";
                 try{
                     filePath = (outputPathField.getText())+ "\\"
@@ -138,46 +123,52 @@ public class Form {
                 } catch(NullPointerException e1) {
                     e1.printStackTrace();
                     JOptionPane.showMessageDialog(null,
-                            "The file could not be created! Output path has to be set!");
+                            "The file could not be created! Output path has to be set!",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
 
                 BufferedWriter bwr = null;
                 try {
-                    System.out.println(new File((outputPathField.getText())+ "\\"
+                    new File((outputPathField.getText())+ "\\"
                             + author + "\\"
-                            + date).mkdirs());
+                            + date).mkdirs();
                     bwr = new BufferedWriter(new FileWriter(new File(filePath)));
                     bwr.write(sb.toString());
                     bwr.flush();
                     bwr.close();
                 } catch (IOException e1) {
-                    JOptionPane.showMessageDialog(null,
-                            "The File could not be created");
                     e1.printStackTrace();
+                    JOptionPane.showMessageDialog(null,
+                            "The File could not be created", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
 
 
-                // XMLReader erzeugen
+                // create XMLReader for parsing
                 XMLReader xmlReader = null;
                 FileReader reader = null;
                 try {
                     xmlReader = XMLReaderFactory.createXMLReader();
                     reader = new FileReader(filePath);
                     InputSource inputSource = new InputSource(reader);
-                    // DTD kann optional übergeben werden
-                    // inputSource.setSystemId("X:\\personen.dtd");
+                    // DTD could be added here
+                    // inputSource.setSystemId("X:\\test.dtd");
                     xmlReader.parse(inputSource);
                     JOptionPane.showMessageDialog(null,
-                            "The file has been succesfully converted in a valid .xml file!");
+                            "The file has been succesfully converted in a valid .xml file!",
+                            "Success", JOptionPane.INFORMATION_MESSAGE);
                 } catch (SAXException e1) {
                     e1.printStackTrace();
                     JOptionPane.showMessageDialog(null,
-                            "The file has been converted but the .xml file is not valid!");
+                            "The file has been converted but the .xml file is not valid!",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 } catch (FileNotFoundException e1) {
+                    System.out.println("parser file not found");
                     e1.printStackTrace();
                 } catch (IOException e1) {
+                    System.out.println("parser io exception");
                     e1.printStackTrace();
                 }
             }

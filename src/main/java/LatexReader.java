@@ -5,10 +5,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by disas on 18.04.2017.
- */
-
 public class LatexReader {
 
     private List<String> file;
