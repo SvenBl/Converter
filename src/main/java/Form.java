@@ -39,9 +39,9 @@ public class Form {
         metaButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                // TODO: 30.07.2017 remove below
-                inputPathField.setText("C:\\Users\\disas\\Dropbox\\Uni Leipzig\\Anwendungen der Linguistischen Informatik\\lls_cts_v4\\cts_lit.tex");
-                outputPathField.setText("C:\\Users\\disas\\Dropbox\\Uni Leipzig\\Anwendungen der Linguistischen Informatik\\lls_cts_v4");
+                // testpath
+                //inputPathField.setText("C:\\Users\\disas\\Dropbox\\Uni Leipzig\\Anwendungen der Linguistischen Informatik\\lls_cts_v4\\cts_lit.tex");
+                //outputPathField.setText("C:\\Users\\disas\\Dropbox\\Uni Leipzig\\Anwendungen der Linguistischen Informatik\\lls_cts_v4");
 
 
                 //set both
@@ -108,7 +108,11 @@ public class Form {
                 }
 
                 String author = tHead.getAuthor();
-                author = author.replaceAll("\\s", "-").replaceAll( "[.]" , "-");
+                author = author.replaceAll("\\s", "-")
+                        .replaceAll( "[.]" , "-")
+                        .replaceAll(",", "+")
+                        .replaceAll(":", "+")
+                        .replaceAll(";", "+");
                 String date = tHead.getDate();
                 date = date.replaceAll("\\s", "-").replaceAll( "[.]" , "-");
                 String title = tHead.getTitle();
@@ -203,7 +207,7 @@ public class Form {
         });
         setTodayButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy");
                 Date now = new Date();
                 dateField.setText(sdfDate.format(now));
             }

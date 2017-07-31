@@ -28,15 +28,13 @@ public class Header {
     }
 
 
-    //Todo set right regex and fill with group
     private void initializeIntel(List<String> latexHeader)
     {
+        //Patterns with
         Pattern titlePattern = Pattern.compile(".*(\\\\title)");
         Pattern authorPattern = Pattern.compile(".*(\\\\author)");
-        Pattern publisherPattern = Pattern.compile("^\\\\title\\{.*\\}");
-        Pattern pubPlacePattern = Pattern.compile("^\\\\title\\{.*\\}");
-        Pattern licensePattern = Pattern.compile("^\\\\title\\{.*\\}");
         Pattern datePattern = Pattern.compile("^\\\\date\\{(.*)\\}");
+        Pattern yearDatePattern = Pattern.compile("[12][0-9]{3}");
         Pattern languagePattern = Pattern.compile("^\\\\setdefaultlanguage\\{(.*)\\}");
         Pattern innerBracketPattern = Pattern.compile("\\{([^\\{\\}]*)\\}");
 
@@ -58,30 +56,22 @@ public class Header {
                     if (m.find()) {
                         this.author = m.group(1);
                         while (m.find()){
-                            this.author += " " + m.group(1);
+                            this.author += "," + m.group(1);
                         }
                     }
                 }
             }
-            m = publisherPattern.matcher(s);
-            if(m.find()){
-                this.publisher = "foo";
-            }
-            m = pubPlacePattern.matcher(s);
-            if(m.find()){
-                this.pubPlace = "foo";
-            }
-            m = licensePattern.matcher(s);
-            if(m.find()){
-                this.license = "foo";
-            }
             m = datePattern.matcher(s);
             if(m.find()){
-                date = m.group(1);
+                this.date = m.group(1);
                 if(date.equals("\\today") || date.equals("")){
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
                     String date = sdf.format(new Date());
                     this.date = date;
+                }
+                m = yearDatePattern.matcher(s);
+                if(m.find()){
+                    this.date = m.group(1);
                 }
             }
             m = languagePattern.matcher(s);
