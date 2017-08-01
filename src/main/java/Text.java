@@ -107,7 +107,7 @@ public class Text {
                             .replaceAll(">" , "&gt;")
                             .replaceAll("\"","&quot;")
                             .replaceAll("'", "&apos;");
-                    teiText.add("\t\t\t\t\t<div3 type = \"sentence\" n=\"" + sentence + "\">" + s + "</div3>");
+                    teiText.add("\t\t\t\t\t<div3 type = \"paragraph\" n=\"" + sentence + "\">" + s + "</div3>");
                     sentence++;
                 }
 
